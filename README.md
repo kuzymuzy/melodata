@@ -57,4 +57,4 @@ MP3, FLAC, AAC, M4A, OGG, WAV
 
 ## License
 
-MIT © 2024 Melodata
+MIT © 2026 Melodata
