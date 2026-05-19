@@ -1,0 +1,1313 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Melodata</title>
+<style>
+  /* ============================================================
+     DESIGN SYSTEM — Light + Dark
+     ============================================================ */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    /* Brand */
+    --accent: #6C5CE7;
+    --accent-hover: #5A4BD1;
+    --accent-soft: rgba(108,92,231,0.10);
+    --accent-soft2: rgba(108,92,231,0.18);
+    --accent-glow: rgba(108,92,231,0.25);
+
+    /* Dark (default) */
+    --bg:         #0F0F14;
+    --bg2:        #16161E;
+    --bg3:        #1E1E2A;
+    --bg4:        #262636;
+    --surface:    #1A1A26;
+    --border:     rgba(255,255,255,0.06);
+    --border2:    rgba(255,255,255,0.10);
+    --border3:    rgba(255,255,255,0.16);
+    --text:       #ECEBF5;
+    --text2:      #B8B7C9;
+    --text3:      #7E7D94;
+    --text4:      #52516A;
+    --green:      #2DC67D;
+    --green-soft: rgba(45,198,125,0.12);
+    --red:        #E05561;
+    --red-soft:   rgba(224,85,97,0.12);
+    --yellow:     #E5A836;
+    --shadow:     0 2px 16px rgba(0,0,0,0.35);
+    --shadow-sm:  0 1px 6px rgba(0,0,0,0.25);
+    --radius-sm:  8px;
+    --radius:     12px;
+    --radius-lg:  16px;
+    --radius-xl:  20px;
+    --font: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    --font-mono: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+    --transition: 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  [data-theme="light"] {
+    --bg:         #F5F5F8;
+    --bg2:        #FFFFFF;
+    --bg3:        #ECECF2;
+    --bg4:        #E2E2EC;
+    --surface:    #FFFFFF;
+    --border:     rgba(0,0,0,0.07);
+    --border2:    rgba(0,0,0,0.11);
+    --border3:    rgba(0,0,0,0.16);
+    --text:       #1A1A2E;
+    --text2:      #555570;
+    --text3:      #8888A0;
+    --text4:      #AAAAAA;
+    --green-soft: rgba(45,198,125,0.10);
+    --red-soft:   rgba(224,85,97,0.10);
+    --shadow:     0 2px 16px rgba(0,0,0,0.08);
+    --shadow-sm:  0 1px 6px rgba(0,0,0,0.06);
+    --accent-soft: rgba(108,92,231,0.08);
+    --accent-soft2: rgba(108,92,231,0.14);
+  }
+
+  /* ============================================================
+     BASE
+     ============================================================ */
+  html, body {
+    height: 100%;
+  }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 13px;
+    line-height: 1.5;
+    overflow: hidden;
+    user-select: none;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* ============================================================
+     LAYOUT — 3-column
+     ============================================================ */
+  .layout {
+    display: flex;
+    height: 100vh;
+    padding-top: 52px; /* space for traffic lights / drag area */
+  }
+
+  /* ============================================================
+     DRAG REGION (movable title bar area)
+     ============================================================ */
+  .drag-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 52px;
+    -webkit-app-region: drag;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    padding-left: 80px; /* leave traffic light space */
+    pointer-events: auto;
+  }
+  .drag-bar-inner {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    -webkit-app-region: no-drag;
+  }
+
+  /* ============================================================
+     SIDEBAR
+     ============================================================ */
+  .sidebar {
+    width: 230px;
+    flex-shrink: 0;
+    background: var(--bg2);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    padding: 0 0 16px;
+    z-index: 10;
+  }
+
+  .sidebar-logo {
+    padding: 20px 20px 16px;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.8px;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .sidebar-logo .logo-icon {
+    width: 28px;
+    height: 28px;
+    background: linear-gradient(135deg, var(--accent), #A78BFA);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    color: #fff;
+    flex-shrink: 0;
+  }
+  .sidebar-logo .logo-text {
+    background: linear-gradient(135deg, var(--text), var(--text2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .sidebar-logo .logo-text em {
+    font-style: normal;
+    color: var(--accent);
+    -webkit-text-fill-color: var(--accent);
+  }
+
+  .sidebar-section {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--text4);
+    padding: 16px 20px 6px;
+  }
+
+  .sidebar-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 18px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text2);
+    cursor: pointer;
+    border-radius: 0;
+    transition: all var(--transition);
+    margin: 1px 8px;
+    border-radius: var(--radius-sm);
+  }
+  .sidebar-btn:hover {
+    background: var(--bg3);
+    color: var(--text);
+  }
+  .sidebar-btn.active {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+  .sidebar-btn .icon {
+    font-size: 16px;
+    width: 22px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .sidebar-spacer { flex: 1; }
+
+  .sidebar-actions {
+    padding: 0 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .add-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    font-size: 13px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all var(--transition);
+    width: 100%;
+  }
+  .add-btn:hover { background: var(--accent-hover); transform: translateY(-1px); box-shadow: var(--shadow-sm); }
+  .add-btn:active { transform: translateY(0); }
+  .add-btn.secondary {
+    background: var(--bg3);
+    color: var(--text2);
+    border: 1px solid var(--border);
+    font-weight: 500;
+  }
+  .add-btn.secondary:hover {
+    color: var(--text);
+    border-color: var(--border2);
+    background: var(--bg4);
+  }
+
+  /* Theme toggle */
+  .theme-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px;
+    margin: 8px 12px 0;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: all var(--transition);
+  }
+  .theme-toggle:hover { border-color: var(--border2); }
+  .theme-toggle .theme-icon { font-size: 14px; }
+  .theme-toggle .theme-label { font-size: 11px; color: var(--text3); font-weight: 500; }
+
+  /* ============================================================
+     TRACK LIST PANEL
+     ============================================================ */
+  .track-list-panel {
+    width: 280px;
+    flex-shrink: 0;
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+  }
+
+  .panel-header {
+    padding: 16px 16px 12px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 52px;
+  }
+  .panel-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.2px;
+  }
+  .track-count {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text3);
+    background: var(--bg3);
+    border-radius: 20px;
+    padding: 2px 9px;
+  }
+
+  .track-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 4px 0;
+  }
+  .track-list::-webkit-scrollbar { width: 5px; }
+  .track-list::-webkit-scrollbar-track { background: transparent; }
+  .track-list::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+  .track-list::-webkit-scrollbar-thumb:hover { background: var(--border3); }
+
+  .track-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border);
+    transition: all var(--transition);
+    position: relative;
+  }
+  .track-item:last-child { border-bottom: none; }
+  .track-item:hover { background: var(--bg2); }
+  .track-item.active {
+    background: var(--accent-soft);
+  }
+  .track-item.active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 6px;
+    bottom: 6px;
+    width: 3px;
+    background: var(--accent);
+    border-radius: 0 3px 3px 0;
+  }
+
+  .track-thumb {
+    width: 42px;
+    height: 42px;
+    border-radius: var(--radius-sm);
+    background: var(--bg3);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+  }
+  .track-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .track-item-info { flex: 1; min-width: 0; }
+  .track-item-title {
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--text);
+    line-height: 1.3;
+  }
+  .track-item-sub {
+    font-size: 11px;
+    color: var(--text3);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: 2px;
+    line-height: 1.3;
+  }
+
+  .track-saved-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--green);
+    flex-shrink: 0;
+    opacity: 0;
+    transition: opacity var(--transition);
+    box-shadow: 0 0 6px rgba(45,198,125,0.4);
+  }
+  .track-item.saved .track-saved-dot { opacity: 1; }
+
+  /* Empty state */
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    gap: 14px;
+    color: var(--text3);
+    text-align: center;
+    padding: 2rem;
+  }
+  .empty-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: var(--radius-xl);
+    background: var(--bg3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+  }
+  .empty-title { font-size: 15px; font-weight: 600; color: var(--text2); }
+  .empty-sub { font-size: 12px; line-height: 1.6; color: var(--text4); }
+
+  /* ============================================================
+     EDITOR PANEL
+     ============================================================ */
+  .editor-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: var(--bg);
+  }
+
+  .editor-empty {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--text3);
+    gap: 16px;
+  }
+  .editor-empty .empty-art {
+    width: 80px;
+    height: 80px;
+    border-radius: var(--radius-xl);
+    background: var(--bg3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+    margin-bottom: 4px;
+  }
+  .editor-empty p { font-size: 16px; font-weight: 600; color: var(--text2); }
+  .editor-empty small { font-size: 12px; color: var(--text4); }
+
+  .editor-content {
+    display: none;
+    flex-direction: column;
+    height: 100%;
+    overflow-y: auto;
+  }
+  .editor-content.visible { display: flex; }
+  .editor-content::-webkit-scrollbar { width: 5px; }
+  .editor-content::-webkit-scrollbar-track { background: transparent; }
+  .editor-content::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+  /* Editor top area */
+  .editor-top {
+    display: flex;
+    align-items: flex-start;
+    gap: 24px;
+    padding: 28px 28px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .cover-wrap { position: relative; flex-shrink: 0; }
+  .cover-art {
+    width: 140px;
+    height: 140px;
+    border-radius: var(--radius-lg);
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 44px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all var(--transition);
+    box-shadow: var(--shadow);
+  }
+  .cover-art:hover {
+    opacity: 0.85;
+    transform: scale(1.02);
+    box-shadow: 0 4px 24px rgba(108,92,231,0.2);
+  }
+  .cover-art img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .cover-hint {
+    font-size: 10px;
+    color: var(--text4);
+    text-align: center;
+    margin-top: 8px;
+    font-weight: 500;
+  }
+
+  .editor-title-area { flex: 1; min-width: 0; }
+
+  .file-path {
+    font-size: 11px;
+    color: var(--text4);
+    margin-bottom: 14px;
+    font-family: var(--font-mono);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 6px 10px;
+    background: var(--bg2);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+  }
+
+  /* Search bar */
+  .auto-search-bar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .search-input {
+    flex: 1;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 10px 14px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 13px;
+    outline: none;
+    transition: all var(--transition);
+  }
+  .search-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+  }
+  .search-input::placeholder { color: var(--text4); }
+
+  .search-btn {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    padding: 10px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all var(--transition);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .search-btn:hover { background: var(--accent-hover); box-shadow: var(--shadow-sm); }
+  .search-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* Search results */
+  .search-results {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 12px;
+    display: none;
+    box-shadow: var(--shadow);
+  }
+  .search-results.visible { display: block; }
+  .search-result-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 14px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border);
+    transition: all var(--transition);
+  }
+  .search-result-item:last-child { border-bottom: none; }
+  .search-result-item:hover { background: var(--accent-soft); }
+  .sr-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-sm);
+    background: var(--bg3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .sr-info { flex: 1; min-width: 0; }
+  .sr-title {
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--text);
+  }
+  .sr-sub {
+    font-size: 11px;
+    color: var(--text3);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: 1px;
+  }
+  .sr-apply {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent);
+    flex-shrink: 0;
+    opacity: 0;
+    transition: opacity var(--transition);
+  }
+  .search-result-item:hover .sr-apply { opacity: 1; }
+
+  /* ============================================================
+     FORM FIELDS
+     ============================================================ */
+  .editor-fields {
+    padding: 20px 28px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .field-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    transition: background var(--transition);
+  }
+  .field-row:first-child { padding-top: 0; }
+  .field-row:last-child { border-bottom: none; }
+
+  .field-label {
+    width: 80px;
+    flex-shrink: 0;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text3);
+    text-align: right;
+    padding-right: 0;
+  }
+
+  .field-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 4px 8px;
+    margin: -4px -8px;
+    border-radius: 6px;
+    caret-color: var(--accent);
+    transition: all var(--transition);
+  }
+  .field-input:hover { background: var(--bg2); }
+  .field-input:focus {
+    background: var(--bg2);
+    box-shadow: 0 0 0 2px var(--accent-glow);
+  }
+  .field-input::placeholder { color: var(--text4); font-weight: 400; }
+  .field-input.small { width: 80px; flex: none; }
+  .field-input.tiny { width: 60px; flex: none; }
+
+  /* ============================================================
+     ACTIONS
+     ============================================================ */
+  .editor-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 28px;
+    border-top: 1px solid var(--border);
+    margin-top: auto;
+    background: var(--bg2);
+  }
+
+  .save-btn {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    padding: 10px 28px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all var(--transition);
+  }
+  .save-btn:hover { background: var(--accent-hover); box-shadow: 0 2px 12px rgba(108,92,231,0.3); }
+  .save-btn:active { transform: scale(0.97); }
+  .save-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .reset-btn {
+    background: transparent;
+    color: var(--text3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 10px 20px;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all var(--transition);
+  }
+  .reset-btn:hover { color: var(--text); border-color: var(--border2); background: var(--bg3); }
+
+  .status-msg {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--green);
+    opacity: 0;
+    transition: opacity var(--transition);
+    margin-left: auto;
+  }
+  .status-msg.visible { opacity: 1; }
+  .status-msg.error { color: var(--red); }
+
+  /* ============================================================
+     SPINNER
+     ============================================================ */
+  .spinner {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(255,255,255,0.2);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+    flex-shrink: 0;
+  }
+  [data-theme="light"] .spinner {
+    border-color: rgba(0,0,0,0.15);
+    border-top-color: var(--accent);
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ============================================================
+     TOAST
+     ============================================================ */
+  .toast {
+    position: fixed;
+    bottom: 28px;
+    left: 50%;
+    transform: translateX(-50%) translateY(12px);
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius);
+    padding: 12px 24px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+    z-index: 999;
+    box-shadow: var(--shadow);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .toast.success { border-color: var(--green); color: var(--green); }
+  .toast.error { border-color: var(--red); color: var(--red); }
+
+  /* ============================================================
+     SCROLLBAR (global)
+     ============================================================ */
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--border3); }
+</style>
+</head>
+<body>
+
+<!-- DRAG BAR — the draggable title bar region -->
+<div class="drag-bar" id="drag-bar">
+  <div class="drag-bar-inner">
+    <span style="font-size:11px;color:var(--text4);font-weight:500;">Melodata</span>
+  </div>
+</div>
+
+<div class="layout">
+  <!-- ======== SIDEBAR ======== -->
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">♫</div>
+      <span class="logo-text">Melo<em>data</em></span>
+    </div>
+
+    <div class="sidebar-section">Библиотека</div>
+    <div class="sidebar-btn active" id="btn-library">
+      <span class="icon">🎵</span> Все треки
+    </div>
+
+    <div class="sidebar-spacer"></div>
+
+    <div class="sidebar-actions">
+      <button class="add-btn" id="btn-open-files">
+        <span style="font-size:15px;">+</span> Добавить файлы
+      </button>
+      <button class="add-btn secondary" id="btn-open-folder">
+        📂 Открыть папку
+      </button>
+    </div>
+
+    <div class="theme-toggle" id="theme-toggle">
+      <span class="theme-icon" id="theme-icon">🌙</span>
+      <span class="theme-label" id="theme-label">Тёмная тема</span>
+    </div>
+  </div>
+
+  <!-- ======== TRACK LIST ======== -->
+  <div class="track-list-panel">
+    <div class="panel-header">
+      <span class="panel-title">Треки</span>
+      <span class="track-count" id="track-count">0</span>
+    </div>
+    <div class="track-list" id="track-list">
+      <div class="empty-state">
+        <div class="empty-icon">🎶</div>
+        <div class="empty-title">Нет треков</div>
+        <div class="empty-sub">Добавь файлы или<br>открой папку с музыкой</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======== EDITOR ======== -->
+  <div class="editor-panel">
+    <div class="editor-empty" id="editor-empty">
+      <div class="empty-art">🎧</div>
+      <p>Выбери трек слева</p>
+      <small>Кликни на любой трек, чтобы редактировать метаданные</small>
+    </div>
+
+    <div class="editor-content" id="editor-content">
+      <div class="editor-top">
+        <div class="cover-wrap">
+          <div class="cover-art" id="cover-art" title="Кликни чтобы найти обложку">
+            🎵
+          </div>
+          <div class="cover-hint">Кликни для поиска</div>
+        </div>
+        <div class="editor-title-area">
+          <div class="file-path" id="file-path"></div>
+          <div class="auto-search-bar">
+            <input class="search-input" id="search-query" placeholder="Название песни или исполнитель..." />
+            <button class="search-btn" id="search-btn">✦ Найти</button>
+          </div>
+          <div class="search-results" id="search-results"></div>
+        </div>
+      </div>
+
+      <div class="editor-fields">
+        <div class="field-row">
+          <span class="field-label">Название</span>
+          <input class="field-input" id="f-title" placeholder="Название трека" />
+        </div>
+        <div class="field-row">
+          <span class="field-label">Исполнитель</span>
+          <input class="field-input" id="f-artist" placeholder="Имя исполнителя" />
+        </div>
+        <div class="field-row">
+          <span class="field-label">Альбом</span>
+          <input class="field-input" id="f-album" placeholder="Название альбома" />
+        </div>
+        <div class="field-row">
+          <span class="field-label">Год</span>
+          <input class="field-input small" id="f-year" placeholder="2024" maxlength="4" />
+        </div>
+        <div class="field-row">
+          <span class="field-label">Жанр</span>
+          <input class="field-input" id="f-genre" placeholder="Жанр" />
+        </div>
+        <div class="field-row">
+          <span class="field-label">Трек</span>
+          <input class="field-input tiny" id="f-track" placeholder="№" maxlength="3" />
+          <span style="color:var(--text4);font-size:12px;">из</span>
+          <input class="field-input tiny" id="f-track-total" placeholder="всего" maxlength="3" />
+        </div>
+      </div>
+
+      <div class="editor-actions">
+        <button class="save-btn" id="save-btn">💾 Сохранить</button>
+        <button class="reset-btn" id="reset-btn">↩ Сбросить</button>
+        <div class="status-msg" id="status-msg"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  // ============================================================
+  // STATE
+  // ============================================================
+  const state = {
+    tracks: [],
+    activeIndex: -1,
+    originalTags: {},
+    currentCover: null,
+    theme: 'dark'
+  }
+
+  // DOM refs
+  const $ = id => document.getElementById(id)
+  const trackListEl = $('track-list')
+  const trackCountEl = $('track-count')
+  const editorEmpty = $('editor-empty')
+  const editorContent = $('editor-content')
+  const coverArtEl = $('cover-art')
+  const filePathEl = $('file-path')
+  const searchQueryEl = $('search-query')
+  const searchBtnEl = $('search-btn')
+  const searchResultsEl = $('search-results')
+  const saveBtnEl = $('save-btn')
+  const resetBtnEl = $('reset-btn')
+  const statusMsgEl = $('status-msg')
+  const toastEl = $('toast')
+
+  // ============================================================
+  // THEME
+  // ============================================================
+  async function initTheme() {
+    try {
+      const theme = await window.melodata.getTheme()
+      applyTheme(theme === 'dark' ? 'dark' : 'light')
+    } catch {
+      applyTheme('dark')
+    }
+  }
+
+  function applyTheme(theme) {
+    state.theme = theme
+    document.documentElement.setAttribute('data-theme', theme)
+    const icon = $('theme-icon')
+    const label = $('theme-label')
+    if (theme === 'dark') {
+      icon.textContent = '🌙'
+      label.textContent = 'Тёмная тема'
+    } else {
+      icon.textContent = '☀️'
+      label.textContent = 'Светлая тема'
+    }
+  }
+
+  $('theme-toggle').addEventListener('click', () => {
+    const next = state.theme === 'dark' ? 'light' : 'dark'
+    applyTheme(next)
+    window.melodata.setTheme(next)
+  })
+
+  // ============================================================
+  // TOAST
+  // ============================================================
+  let toastTimer = null
+  function showToast(msg, type = 'success') {
+    if (toastTimer) clearTimeout(toastTimer)
+    toastEl.textContent = msg
+    toastEl.className = `toast ${type} show`
+    toastTimer = setTimeout(() => { toastEl.className = 'toast' }, 3000)
+  }
+
+  // ============================================================
+  // FILE LOADING
+  // ============================================================
+  $('btn-open-files').addEventListener('click', async () => {
+    const paths = await window.melodata.openFiles()
+    if (paths.length) loadTracks(paths)
+  })
+
+  $('btn-open-folder').addEventListener('click', async () => {
+    const paths = await window.melodata.openFolder()
+    if (paths.length) loadTracks(paths)
+  })
+
+  async function loadTracks(paths) {
+    const startIdx = state.tracks.length
+    const newTracks = paths.map(p => ({
+      filePath: p,
+      name: p.split('/').pop(),
+      tags: null,
+      saved: false
+    }))
+    state.tracks.push(...newTracks)
+    renderTrackList()
+
+    // Load tags asynchronously
+    for (let i = startIdx; i < state.tracks.length; i++) {
+      try {
+        const tags = await window.melodata.readTags(state.tracks[i].filePath)
+        state.tracks[i].tags = tags
+        renderTrackItem(i)
+      } catch (e) {
+        state.tracks[i].tags = { error: e.message }
+      }
+    }
+    trackCountEl.textContent = state.tracks.length
+  }
+
+  function renderTrackList() {
+    if (state.tracks.length === 0) {
+      trackListEl.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-icon">🎶</div>
+          <div class="empty-title">Нет треков</div>
+          <div class="empty-sub">Добавь файлы или<br>открой папку с музыкой</div>
+        </div>`
+      return
+    }
+    trackListEl.innerHTML = ''
+    state.tracks.forEach((_, i) => {
+      const el = document.createElement('div')
+      el.className = 'track-item'
+      el.id = `track-item-${i}`
+      el.innerHTML = `
+        <div class="track-thumb" id="thumb-${i}">🎵</div>
+        <div class="track-item-info">
+          <div class="track-item-title" id="tname-${i}">...</div>
+          <div class="track-item-sub" id="tsub-${i}">загрузка...</div>
+        </div>
+        <div class="track-saved-dot"></div>`
+      el.addEventListener('click', () => selectTrack(i))
+      trackListEl.appendChild(el)
+    })
+    trackCountEl.textContent = state.tracks.length
+  }
+
+  function renderTrackItem(i) {
+    const track = state.tracks[i]
+    const tags = track.tags
+    if (!tags) return
+
+    const nameEl = $(`tname-${i}`)
+    const subEl = $(`tsub-${i}`)
+    const thumbEl = $(`thumb-${i}`)
+
+    if (nameEl) nameEl.textContent = tags.title || track.name
+    if (subEl) subEl.textContent = tags.artist || 'Неизвестный исполнитель'
+    if (thumbEl && tags.cover) {
+      thumbEl.innerHTML = `<img src="${tags.cover}" alt="" loading="lazy">`
+    }
+  }
+
+  // ============================================================
+  // SELECT TRACK
+  // ============================================================
+  function selectTrack(i) {
+    state.activeIndex = i
+    document.querySelectorAll('.track-item').forEach((el, idx) => {
+      el.classList.toggle('active', idx === i)
+    })
+
+    const track = state.tracks[i]
+    const tags = track.tags || {}
+
+    editorEmpty.style.display = 'none'
+    editorContent.classList.add('visible')
+
+    filePathEl.textContent = track.filePath
+
+    // Cover
+    state.currentCover = tags.cover || null
+    if (tags.cover) {
+      coverArtEl.innerHTML = `<img src="${tags.cover}" alt="Обложка">`
+    } else {
+      coverArtEl.innerHTML = '🎵'
+    }
+
+    // Fields
+    $('f-title').value = tags.title || ''
+    $('f-artist').value = tags.artist || ''
+    $('f-album').value = tags.album || ''
+    $('f-year').value = tags.year || ''
+    $('f-genre').value = tags.genre || ''
+    $('f-track').value = tags.track || ''
+    $('f-track-total').value = tags.trackTotal || ''
+
+    // Prefill search
+    searchQueryEl.value = [tags.title, tags.artist].filter(Boolean).join(' ')
+    searchResultsEl.classList.remove('visible')
+    searchResultsEl.innerHTML = ''
+    statusMsgEl.className = 'status-msg'
+
+    state.originalTags = { ...tags }
+  }
+
+  // ============================================================
+  // MUSICBRAINZ SEARCH
+  // ============================================================
+  searchBtnEl.addEventListener('click', doSearch)
+  searchQueryEl.addEventListener('keydown', e => {
+    if (e.key === 'Enter') doSearch()
+  })
+
+  async function doSearch() {
+    const q = searchQueryEl.value.trim()
+    if (!q) return
+
+    searchBtnEl.disabled = true
+    searchBtnEl.innerHTML = '<span class="spinner"></span> Ищу...'
+    searchResultsEl.classList.remove('visible')
+
+    try {
+      const results = await window.melodata.searchMusicBrainz(q)
+      searchBtnEl.disabled = false
+      searchBtnEl.innerHTML = '✦ Найти'
+
+      if (!results.length) {
+        showToast('Ничего не нашлось, попробуй другой запрос', 'error')
+        return
+      }
+
+      searchResultsEl.innerHTML = results.map((r, i) => `
+        <div class="search-result-item" data-idx="${i}">
+          <div class="sr-icon">🎵</div>
+          <div class="sr-info">
+            <div class="sr-title">${escHtml(r.title)}</div>
+            <div class="sr-sub">${escHtml(r.artist)}${r.album ? ' · ' + escHtml(r.album) : ''}${r.year ? ' · ' + escHtml(r.year) : ''}</div>
+          </div>
+          <span class="sr-apply">Применить →</span>
+        </div>
+      `).join('')
+
+      searchResultsEl.querySelectorAll('.search-result-item').forEach(el => {
+        el.addEventListener('click', () => applyResult(results[+el.dataset.idx]))
+      })
+
+      searchResultsEl.classList.add('visible')
+    } catch (e) {
+      searchBtnEl.disabled = false
+      searchBtnEl.innerHTML = '✦ Найти'
+      showToast('Ошибка поиска: ' + e.message, 'error')
+    }
+  }
+
+  async function applyResult(r) {
+    $('f-title').value = r.title || ''
+    $('f-artist').value = r.artist || ''
+    $('f-album').value = r.album || ''
+    $('f-year').value = r.year || ''
+    searchResultsEl.classList.remove('visible')
+
+    if (!r.releaseId) {
+      showToast('Метаданные применены', 'success')
+      return
+    }
+
+    // Fetch release details: genre + track number
+    try {
+      const details = await window.melodata.fetchReleaseDetails({
+        releaseId: r.releaseId,
+        recordingId: r.recordingId
+      })
+
+      if (details.genre) {
+        $('f-genre').value = details.genre
+      }
+      if (details.track) {
+        $('f-track').value = details.track
+      }
+      if (details.trackTotal) {
+        $('f-track-total').value = details.trackTotal
+      }
+      if (details.artist && !$('f-artist').value) {
+        $('f-artist').value = details.artist
+      }
+    } catch (e) {
+      console.error('Failed to fetch release details:', e)
+    }
+
+    // Fetch cover
+    showToast('Загружаю обложку...')
+    try {
+      const cover = await window.melodata.fetchCover(r.releaseId)
+      if (cover) {
+        state.currentCover = cover
+        coverArtEl.innerHTML = `<img src="${cover}" alt="Обложка">`
+        showToast('Обложка и метаданные загружены ✓', 'success')
+      } else {
+        showToast('Метаданные загружены, обложка не найдена', 'success')
+      }
+    } catch (e) {
+      showToast('Метаданные загружены, обложка не найдена', 'success')
+    }
+  }
+
+  // ============================================================
+  // COVER CLICK
+  // ============================================================
+  coverArtEl.addEventListener('click', async () => {
+    const q = searchQueryEl.value.trim() ||
+      [$('f-title').value, $('f-artist').value].filter(Boolean).join(' ')
+    if (!q) {
+      showToast('Сначала заполни название или используй автопоиск', 'error')
+      return
+    }
+
+    showToast('Ищу обложку...')
+    try {
+      const results = await window.melodata.searchMusicBrainz(q)
+      if (results.length && results[0].releaseId) {
+        const cover = await window.melodata.fetchCover(results[0].releaseId)
+        if (cover) {
+          state.currentCover = cover
+          coverArtEl.innerHTML = `<img src="${cover}" alt="Обложка">`
+          showToast('Обложка загружена ✓', 'success')
+        } else {
+          showToast('Обложка не найдена', 'error')
+        }
+      } else {
+        showToast('Не нашёл — попробуй автопоиск выше', 'error')
+      }
+    } catch (e) {
+      showToast('Ошибка поиска обложки', 'error')
+    }
+  })
+
+  // ============================================================
+  // SAVE
+  // ============================================================
+  saveBtnEl.addEventListener('click', async () => {
+    if (state.activeIndex === -1) return
+    const track = state.tracks[state.activeIndex]
+
+    saveBtnEl.textContent = 'Сохраняю...'
+    saveBtnEl.disabled = true
+
+    const tags = {
+      title: $('f-title').value,
+      artist: $('f-artist').value,
+      album: $('f-album').value,
+      year: $('f-year').value,
+      genre: $('f-genre').value,
+      track: $('f-track').value,
+      trackTotal: $('f-track-total').value,
+      cover: state.currentCover
+    }
+
+    try {
+      const result = await window.melodata.saveTags({ filePath: track.filePath, tags })
+
+      saveBtnEl.textContent = '💾 Сохранить'
+      saveBtnEl.disabled = false
+
+      if (result.success) {
+        track.tags = { ...tags, cover: state.currentCover }
+        track.saved = true
+        renderTrackItem(state.activeIndex)
+        const item = $(`track-item-${state.activeIndex}`)
+        if (item) item.classList.add('saved')
+        showToast('Сохранено ✓', 'success')
+      } else {
+        showToast('Ошибка сохранения: ' + (result.error || 'неизвестная ошибка'), 'error')
+      }
+    } catch (e) {
+      saveBtnEl.textContent = '💾 Сохранить'
+      saveBtnEl.disabled = false
+      showToast('Ошибка: ' + e.message, 'error')
+    }
+  })
+
+  // ============================================================
+  // RESET
+  // ============================================================
+  resetBtnEl.addEventListener('click', () => {
+    if (state.activeIndex === -1) return
+    const tags = state.originalTags
+    $('f-title').value = tags.title || ''
+    $('f-artist').value = tags.artist || ''
+    $('f-album').value = tags.album || ''
+    $('f-year').value = tags.year || ''
+    $('f-genre').value = tags.genre || ''
+    $('f-track').value = tags.track || ''
+    $('f-track-total').value = tags.trackTotal || ''
+    state.currentCover = tags.cover || null
+    coverArtEl.innerHTML = tags.cover ? `<img src="${tags.cover}" alt="">` : '🎵'
+    showToast('Сброшено')
+  })
+
+  // ============================================================
+  // UTILS
+  // ============================================================
+  function escHtml(s) {
+    const d = document.createElement('div')
+    d.textContent = s || ''
+    return d.innerHTML
+  }
+
+  // ============================================================
+  // INIT
+  // ============================================================
+  initTheme()
+</script>
+</body>
+</html>

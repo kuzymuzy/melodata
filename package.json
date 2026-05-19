@@ -1,0 +1,61 @@
+{
+  "name": "melodata",
+  "version": "1.0.0",
+  "description": "Beautiful music metadata editor for macOS",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron .",
+    "build:mac": "electron-builder --mac",
+    "build:mac:arm": "electron-builder --mac --arm64",
+    "build:mac:x64": "electron-builder --mac --x64"
+  },
+  "keywords": [
+    "music",
+    "metadata",
+    "id3",
+    "tags",
+    "musicbrainz",
+    "editor",
+    "macos"
+  ],
+  "author": "Melodata",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^41.6.1",
+    "electron-builder": "^26.8.1"
+  },
+  "dependencies": {
+    "music-metadata": "^11.12.3",
+    "node-id3": "^0.2.6"
+  },
+  "build": {
+    "appId": "app.melodata.melodata",
+    "productName": "Melodata",
+    "copyright": "Copyright © 2024 Melodata",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "src/**/*",
+      "package.json"
+    ],
+    "mac": {
+      "category": "public.app-category.music",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "arm64",
+            "x64"
+          ]
+        }
+      ],
+      "icon": "src/icon.png",
+      "darkModeSupport": true
+    },
+    "dmg": {
+      "title": "Melodata",
+      "icon": "src/icon.png"
+    }
+  }
+}
